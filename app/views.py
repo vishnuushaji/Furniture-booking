@@ -21,7 +21,7 @@ from django.contrib.auth.views import (
 from .tokens import account_activation_token
 from django.urls import reverse
 from django.conf import settings
-
+from django.views.generic import View
 
 from django.views.generic import TemplateView, ListView, CreateView
 from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
@@ -64,10 +64,10 @@ class ContactView(TemplateView):
             subject = 'Contact Form Submission'
             message_body = f'First Name: {first_name}\nLast Name: {last_name}\nEmail: {email}\nMessage: {message}'
             from_email = settings.DEFAULT_FROM_EMAIL
-            to_email = ['noufalmhd112@gmail.com']  # Replace with your admin's email address
+            to_email = ['noufalmhd112@gmail.com']  
             send_mail(subject, message_body, from_email, to_email, fail_silently=False)
 
-            return render(request, 'contact.html')  # Redirect to a success page
+            return render(request, 'contact_success.html')  
         return self.render_to_response({'form': form})
 
 class SignupView(CreateView):
@@ -87,7 +87,7 @@ class SignupView(CreateView):
             'user': user,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': account_activation_token.make_token(user),  # Use your custom token generator
+            'token': account_activation_token.make_token(user),  
         })
         user.email_user(subject, message)
 
@@ -123,20 +123,21 @@ class PasswordResetCompleteView(AuthPasswordResetCompleteView):
 
 
 
-def activate(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = get_user_model().objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-        user = None
+class ActivateAccountView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = get_user_model().objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+            user = None
 
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        return redirect('login')
-    else:
-        # Set the user as inactive if activation link is invalid or has expired
-        if user is not None:
-            user.is_active = False
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
             user.save()
-        return HttpResponse('Activation link is invalid or has expired.')
+            return redirect('login')
+        else:
+            
+            if user is not None:
+                user.is_active = False
+                user.save()
+            return HttpResponse('Activation link is invalid or has expired.')
