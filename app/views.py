@@ -1,81 +1,19 @@
-from django.views.generic import TemplateView, ListView
-from django.contrib.auth.models import User
-from rest_framework import generics, status, permissions
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import UserProfile, Product, Order
-from django.contrib.auth.forms import AuthenticationForm
-from .serializers import UserSerializer, ProductSerializer, OrderSerializer,LoginSerializer, SignupSerializer
-from .forms import UserCreationForm
-class AddNewProductView(generics.CreateAPIView):
-    serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser]
+from django.shortcuts import render, redirect
 
-class SignupView(generics.CreateAPIView):
-    serializer_class = SignupSerializer  
-    permission_classes = [AllowAny]
+from django.views.generic import TemplateView, ListView , CreateView
+from django.contrib.auth.views import (
+    LoginView as AuthLoginView,
+    LogoutView as AuthLogoutView,
+    PasswordChangeView as AuthPasswordChangeView,
+    PasswordResetView as AuthPasswordResetView,
+    PasswordResetDoneView as AuthPasswordResetDoneView,
+    PasswordResetConfirmView as AuthPasswordResetConfirmView,
+    PasswordResetCompleteView as AuthPasswordResetCompleteView,
+)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-
-        user_serializer = UserSerializer(user)
-        response_data = {
-            'access_token': access_token,
-            'refresh_token': str(refresh),
-            'user': user_serializer.data,
-        }
-
-        return Response(response_data, status=status.HTTP_201_CREATED)
-    
-class LoginView(generics.CreateAPIView):
-    serializer_class = LoginSerializer  
-    permission_classes = [AllowAny]
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        user = serializer.validated_data['user']
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-
-        user_serializer = UserSerializer(user)
-        response_data = {
-            'access_token': access_token,
-            'refresh_token': str(refresh),
-            'user': user_serializer.data,
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)
-class GetUserProfileView(generics.RetrieveAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
-
-class GetAllProductsView(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-class GetProductByIdView(generics.RetrieveAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-class CreateOrderView(generics.CreateAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
-
-class GetOrderByIdView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+from django.urls import reverse_lazy
+from .forms import UserRegistrationForm,CustomAuthenticationForm
+from .models import Product
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -83,17 +21,8 @@ class IndexView(TemplateView):
 class CartView(TemplateView):
     template_name = 'cart.html'
 
-class AboutView(TemplateView):
-    template_name = 'about.html'
-
-class BlogView(TemplateView):
-    template_name = 'blog.html'
-
 class CheckoutView(TemplateView):
     template_name = 'checkout.html'
-
-class ServicesView(TemplateView):
-    template_name = 'services.html'
 
 class ShopView(ListView):
     model = Product
@@ -105,3 +34,38 @@ class ThankYouView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = 'contact.html'
+
+class SignupView(CreateView):
+    template_name = 'registration/signup.html'
+    form_class = UserRegistrationForm  # Assuming you have a custom registration form
+    success_url = reverse_lazy('login')  # Replace 'login' with your login URL
+
+class LoginView(AuthLoginView):
+    template_name = 'registration/login.html'
+    form_class = CustomAuthenticationForm
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        return redirect(reverse_lazy('shop'))
+
+class LogoutView(AuthLogoutView):
+    next_page = '/'  
+
+class PasswordChangeView(AuthPasswordChangeView):
+    template_name = 'registration/password_change.html'
+    success_url = reverse_lazy('password_change_done')
+
+class PasswordResetView(AuthPasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    success_url = reverse_lazy('password_reset_done')
+
+class PasswordResetDoneView(AuthPasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+
+class PasswordResetConfirmView(AuthPasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+class PasswordResetCompleteView(AuthPasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'

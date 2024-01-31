@@ -30,23 +30,16 @@
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
+				
 				<div class="collapse navbar-collapse" id="navbarsFurni">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item ">
+						<li class="nav-item active">
 							<a class="nav-link" href="{% url 'index' %}">Home</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="{% url 'shop' %}">Shop</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'about' %}">About us</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'services' %}">Services</a>
-						</li>
-						<li class="nav-item ">
-							<a class="nav-link " href="{% url 'blog' %}">Blog</a>
-						</li>
+						
 						<li class="nav-item">
 							<a class="nav-link" href="{% url 'contact' %}">Contact us</a>
 						</li>
@@ -158,8 +151,10 @@
                       <button class="btn btn-black btn-sm btn-block">Update Cart</button>
                     </div>
                     <div class="col-md-6">
-                      <button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
-                    </div>
+						<a href="{% url 'shop' %}">
+							<button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
+						</a>
+					</div>
                   </div>
                   <div class="row">
                     <div class="col-md-12">
