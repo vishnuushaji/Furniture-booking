@@ -27,11 +27,10 @@ class SignupSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        # Remove the password1 and password2 fields from the validated data
+       
         validated_data.pop('password1', None)
         validated_data.pop('password2', None)
 
-        # Create the user with the validated data
         user = User.objects.create_user(**validated_data)
         return user
 
@@ -40,13 +39,13 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     def validate(self, data):
-        user = AuthenticationForm(data=self.initial_data).get_user()
-        if user:
-            data['user'] = user
+        form = AuthenticationForm(data=self.initial_data)
+        if form.is_valid():
+            data['user'] = form.get_user()
         else:
             raise serializers.ValidationError('Unable to log in with provided credentials.')
         return data
-
+    
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

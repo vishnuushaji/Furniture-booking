@@ -13,11 +13,10 @@ class AddNewProductView(generics.CreateAPIView):
     permission_classes = [permissions.IsAdminUser]
 
 class SignupView(generics.CreateAPIView):
-    serializer_class = SignupSerializer  # Use the new SignupSerializer for signup
+    serializer_class = SignupSerializer  
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
-        # Use the new SignupSerializer to handle the signup process
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -35,7 +34,7 @@ class SignupView(generics.CreateAPIView):
         return Response(response_data, status=status.HTTP_201_CREATED)
     
 class LoginView(generics.CreateAPIView):
-    serializer_class = LoginSerializer  # Use the LoginSerializer for login
+    serializer_class = LoginSerializer  
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):

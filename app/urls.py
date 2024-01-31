@@ -6,7 +6,6 @@ from .views import (
 )
 
 urlpatterns = [
-      # Add URLs for your HTML templates
     path('', IndexView.as_view(), name='index'),
     path('cart/', CartView.as_view(), name='cart'),
     path('about/', AboutView.as_view(), name='about'),
