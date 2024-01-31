@@ -43,11 +43,18 @@
 					</ul>
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 						{% if user.is_authenticated %}
-						<!-- Show logout link if the user is authenticated -->
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+						<!-- Show dropdown with logout and password change options for authenticated users -->
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+							data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<img src="{% static 'images/user.svg' %}">
+							</a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+								<a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
+							</div>
 						</li>
-						{% else %}
+					{% else %}
 						<!-- Show login and signup links if the user is not authenticated -->
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -59,7 +66,7 @@
 								<a class="dropdown-item" href="{% url 'signup' %}">Signup</a>
 							</div>
 						</li>
-						{% endif %}
+					{% endif %}
 						<li><a class="nav-link" href="{% url 'cart' %}"><img
 									src="{% static 'images/cart.svg' %}"></a></li>
 					</ul>

@@ -20,9 +20,11 @@ from django.contrib.auth.views import (
 )
 from .tokens import account_activation_token
 from django.urls import reverse
+from django.conf import settings
+
 
 from django.views.generic import TemplateView, ListView, CreateView
-from .forms import UserRegistrationForm, CustomAuthenticationForm
+from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
 from .models import Product
 
 class IndexView(TemplateView):
@@ -44,6 +46,29 @@ class ThankYouView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = 'contact.html'
+
+    def get(self, request, *args, **kwargs):
+        form = ContactForm()
+        return self.render_to_response({'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+
+            # Send email
+            subject = 'Contact Form Submission'
+            message_body = f'First Name: {first_name}\nLast Name: {last_name}\nEmail: {email}\nMessage: {message}'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to_email = ['noufalmhd112@gmail.com']  # Replace with your admin's email address
+            send_mail(subject, message_body, from_email, to_email, fail_silently=False)
+
+            return render(request, 'contact.html')  # Redirect to a success page
+        return self.render_to_response({'form': form})
 
 class SignupView(CreateView):
     template_name = 'registration/signup.html'
