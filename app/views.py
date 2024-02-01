@@ -48,7 +48,7 @@ class CartView(View):
             products = cart.products.all()
             return render(request, 'cart.html', {'cart': cart, 'products': products})
         else:
-            # User is not logged in, show empty cart
+           
             return render(request, 'cart.html', {'products': []})
 
 class IndexView(TemplateView):
@@ -57,7 +57,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Get the latest 3 products
+       
         latest_products = Product.objects.all().order_by('-id')[:3]
 
         context['latest_products'] = latest_products
@@ -84,13 +84,13 @@ class ContactView(TemplateView):
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Process the form data
+            
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             email = form.cleaned_data['email']
             message = form.cleaned_data['message']
 
-            # Send email
+           
             subject = 'Contact Form Submission'
             message_body = f'First Name: {first_name}\nLast Name: {last_name}\nEmail: {email}\nMessage: {message}'
             from_email = settings.DEFAULT_FROM_EMAIL
