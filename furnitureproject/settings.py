@@ -87,11 +87,14 @@ WSGI_APPLICATION = 'furnitureproject.wsgi.application'
 
 # To use Neon with Django, you have to create a Project on Neon and specify the project connection settings in your settings.py in the same way as for standalone Postgres.
 
+import os
+from dj_database_url import parse as db_url
+
+# ...
+
 DATABASES = {
-    # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
     'default': env.db(),
-    # read os.environ['SQLITE_URL']
-    'extra': env.db('PostgreSQL', default='postgresql://noufalmhd112:Zch5pt9sGFJr@ep-weathered-hat-a1hfluej.ap-southeast-1.aws.neon.tech/furniture?sslmode=require')
+    'extra': env.db('PostgreSQL', default=os.environ.get('EXTRA_DATABASE_URL'))
 }
 
 
@@ -150,11 +153,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'noufalmhd112@gmail.com'
-EMAIL_HOST_PASSWORD = 'fbzc mcqq ynzf bhyz'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-DEFAULT_FROM_EMAIL = 'noufalmhd112@gmail.com'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')

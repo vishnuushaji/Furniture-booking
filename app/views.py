@@ -176,9 +176,13 @@ class ActivateAccountView(View):
                 user.save()
             return HttpResponse('Activation link is invalid or has expired.')
         
+
+
+
 class AddToCartView(View):
     def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
-        cart, created = Cart.objects.get_or_create(user=request.user, defaults={'products': []})
-        cart.products.add(product)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart.products.set([product])
+
         return redirect('cart') 
