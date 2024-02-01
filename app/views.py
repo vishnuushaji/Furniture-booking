@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -37,15 +38,18 @@ class RemoveFromCartView(View):
         cart.save()
         return JsonResponse({'success': True})
 
-@method_decorator(login_required, name='dispatch')
 @method_decorator(transaction.atomic, name='dispatch')
 class CartView(View):
     def get(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user, defaults={'products': []})
-        if created:
-            messages.success(request, 'Your cart has been created.')
-        products = cart.products.all()
-        return render(request, 'cart.html', {'cart': cart, 'products': products})
+        if request.user.is_authenticated:
+            cart, created = Cart.objects.get_or_create(user=request.user, defaults={'products': []})
+            if created:
+                messages.success(request, 'Your cart has been created.')
+            products = cart.products.all()
+            return render(request, 'cart.html', {'cart': cart, 'products': products})
+        else:
+            # User is not logged in, show empty cart
+            return render(request, 'cart.html', {'products': []})
 
 class IndexView(TemplateView):
     template_name = 'index.html'
