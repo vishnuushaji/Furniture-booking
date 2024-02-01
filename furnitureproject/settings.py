@@ -3,8 +3,6 @@ import os
 from decouple import config
 import dj_database_url
 import environ
-from dj_database_url import parse as db_url
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,13 +87,11 @@ WSGI_APPLICATION = 'furnitureproject.wsgi.application'
 
 # To use Neon with Django, you have to create a Project on Neon and specify the project connection settings in your settings.py in the same way as for standalone Postgres.
 
-
-
-# ...
-
 DATABASES = {
+    # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
     'default': env.db(),
-    'extra': env.db('PostgreSQL', default=os.environ.get('EXTRA_DATABASE_URL'))
+    # read os.environ['SQLITE_URL']
+    'extra': env.db('PostgreSQL', default='postgresql://noufalmhd112:Zch5pt9sGFJr@ep-weathered-hat-a1hfluej.ap-southeast-1.aws.neon.tech/furniture?sslmode=require')
 }
 
 
