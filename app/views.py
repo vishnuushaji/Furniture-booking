@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, CreateView, View
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
@@ -39,7 +40,7 @@ class RemoveFromCartView(View):
         product = get_object_or_404(Product, id=product_id)
         cart.products.remove(product)
         cart.save()
-        return JsonResponse({'success': True})
+        return HttpResponseRedirect(reverse('cart'))
 
 @method_decorator(transaction.atomic, name='dispatch')
 class CartView(View):

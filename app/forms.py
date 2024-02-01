@@ -9,7 +9,6 @@ class UserRegistrationForm(UserCreationForm):
 
 class CustomAuthenticationForm(AuthenticationForm):
     def confirm_login_allowed(self, user):
-        # Perform any custom logic here if needed
         super().confirm_login_allowed(user)
 
 
