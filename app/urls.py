@@ -1,16 +1,20 @@
 from django.urls import path
 from .views import (
-    IndexView, CartView, CheckoutView, ContactView,
+    IndexView, CartView, CheckoutView, ContactView,AddToCartView,
     ShopView, ThankYouView,
     SignupView, LoginView, LogoutView,
     PasswordChangeView, PasswordResetView, PasswordResetDoneView,
     PasswordResetConfirmView, PasswordResetCompleteView,
-    ActivateAccountView 
+    ActivateAccountView , RemoveFromCartView
 )
 
+from app import views
+
 urlpatterns = [
-    path('', IndexView.as_view(), name='index'),
+     path('', IndexView.as_view(), name='index'),
     path('cart/', CartView.as_view(), name='cart'),
+    path('cart/add/<int:product_id>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('cart/remove/<int:product_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('shop/', ShopView.as_view(), name='shop'),
     path('thankyou/', ThankYouView.as_view(), name='thankyou'),
