@@ -99,7 +99,7 @@
 									{% csrf_token %}
 									<p> Product ID: {{ product.id|default:"None" }}</p>
 									<button type="submit" class="btn btn-link p-0 remove-product-btn">
-										<span class="icon-cross"></span>
+										<span class="icon-cross"></span> Remove
 									</button>
 								</form>
 							</div>
@@ -125,6 +125,7 @@
 				});
 			});
 		</script>
+		
 	
 	
 

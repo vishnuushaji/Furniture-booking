@@ -16,6 +16,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from .tokens import account_activation_token
+from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
+from .models import Cart, Product
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.views import (
     LoginView as AuthLoginView,
     LogoutView as AuthLogoutView,
@@ -25,10 +29,9 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView as AuthPasswordResetConfirmView,
     PasswordResetCompleteView as AuthPasswordResetCompleteView,
 )
-from .tokens import account_activation_token
-from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
-from .models import Cart, Product
-from django.views.decorators.csrf import csrf_exempt
+
+
+
 
 class RemoveFromCartView(View):
     def post(self, request, product_id):
@@ -172,22 +175,9 @@ class ActivateAccountView(View):
                 user.save()
             return HttpResponse('Activation link is invalid or has expired.')
         
-
-@method_decorator(login_required, name='dispatch')
 class AddToCartView(View):
-    @method_decorator(transaction.atomic)
-    def post(self, request, *args, **kwargs):
-        product_id = kwargs['product_id']
+    def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
-
-        # Get or create the user's cart
-        cart, created = Cart.objects.get_or_create(user=request.user)
-
-        if product in cart.products.all():
-            messages.info(request, 'Product already in cart.')
-        else:
-            # Add the product to the cart
-            cart.products.add(product)
-            messages.success(request, 'Product added to cart.')
-
-        return JsonResponse({'success': True})
+        cart, created = Cart.objects.get_or_create(user=request.user, defaults={'products': []})
+        cart.products.add(product)
+        return redirect('cart') 

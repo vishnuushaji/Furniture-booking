@@ -105,39 +105,77 @@
         {% block content %}
         {% endblock %}
 		<!-- Start Product Section -->
-		<div class="product-section">
-			<div class="container">
-				<div class="row">
+<div class="product-section">
+    <div class="container">
+        <div class="row">
 
-					<!-- Start Column 1 -->
-					<div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-						<h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-						<p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. </p>
-						<p><a href="{% url 'shop' %}" class="btn">Explore</a></p>
-					</div> 
-					<!-- End Column 1 -->
-					
-					<!-- Start Column 2 -->
-					    <!-- Start Dynamic Products -->
+            <!-- Start Column 1 -->
+            <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+                <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
+                <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. </p>
+                <p><a href="{% url 'shop' %}" class="btn">Explore</a></p>
+            </div>
+            <!-- End Column 1 -->
+
+            <!-- Start Column 2 -->
+            <div class="col-md-12 col-lg-9">
+               <!-- Start Dynamic Products -->
+			<div class="untree_co-section product-section before-footer-section">
+				<div class="container">
+					<div class="row">
 						{% for product in latest_products %}
-						<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-							<a class="product-item" href="{% url 'cart' %}">
-								<img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
-								<h3 class="product-title">{{ product.title }}</h3>
-								<strong class="product-price">${{ product.price }}</strong>
-		
-								<span class="icon-cross">
-									<img src="{% static 'images/cross.svg' %}" class="img-fluid">
-								</span>
-							</a>
-						</div>
-					{% endfor %}
-					<!-- End Dynamic Products -->
-		
+							<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+								<div class="product-item">
+									<img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
+									<h3 class="product-title">{{ product.title }}</h3>
+									<strong class="product-price">${{ product.price }}</strong>
+
+									<form method="post" class="add-to-cart-form" action="{% url 'add_to_cart' product.id %}" data-product-id="{{ product.id }}">
+										{% csrf_token %}
+										<button type="submit" class="btn btn-primary btn-add-to-cart" data-product-id="{{ product.id }}">
+											Add to Cart
+										</button>
+									</form>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
 				</div>
 			</div>
-		</div>
-		<!-- End Product Section -->
+			<!-- End Dynamic Products -->
+
+			<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+			<script>
+				$(document).ready(function () {
+					$(".add-to-cart-form").submit(function (event) {
+						event.preventDefault();
+
+						var form = $(this);
+						var productId = form.data("product-id");
+
+						$.ajax({
+							type: "POST",
+							url: form.attr("action"),
+							data: form.serialize(),
+							success: function (data) {
+								// Handle success, e.g., update UI to reflect the added product
+								console.log(data);
+								// Redirect to the cart page
+								window.location.href = "{% url 'cart' %}";
+							},
+							error: function (error) {
+								// Handle error
+								console.log(error);
+							}
+						});
+					});
+				});
+			</script>            
+            </div>
+            <!-- End Column 2 -->
+        </div>
+    </div>
+</div>
 
 		<!-- Start Why Choose Us Section -->
 		<div class="why-choose-section">

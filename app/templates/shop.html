@@ -99,9 +99,7 @@
 									<img src="{{ product.image.url }}" class="img-fluid product-thumbnail" alt="{{ product.title }}">
 									<h3 class="product-title">{{ product.title }}</h3>
 									<strong class="product-price">${{ product.price }}</strong>
-									<span class="icon-cross remove-product" data-product-id="{{ product.id }}">
-										<img src="{% static 'images/cross.svg' %}" class="img-fluid">
-									</span>
+									<span class="" data-product-id="{{ product.id }}"></span>
 								</a>
 								<form method="post" class="add-to-cart-form" action="{% url 'add_to_cart' product.id %}" data-product-id="{{ product.id }}">
 									{% csrf_token %}
@@ -116,37 +114,34 @@
 			</div>
 		</div>
 		
+		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				const addToCartForms = document.querySelectorAll('.add-to-cart-form');
-				for (const form of addToCartForms) {
-					form.addEventListener('submit', function(event) {
-						event.preventDefault();
-						const productId = this.dataset.productId;
-						const url = '/cart/add/' + productId + '/';
-						fetch(url, {
-							method: 'POST',
-							headers: {
-								'X-CSRFToken': Cookies.get('csrftoken'),
-							},
-						})
-						.then(response => response.json())
-						.then(data => {
-							if (data.success) {
-								// Handle success, if needed
-								alert('Product added to cart!');
-							} else {
-								alert('Failed to add product to cart.');
-							}
-						})
-						.catch(error => {
-							console.error(error);
-							alert('Failed to add product to cart.');
-						});
+			$(document).ready(function () {
+				$(".add-to-cart-form").submit(function (event) {
+					event.preventDefault();
+		
+					var form = $(this);
+		
+					$.ajax({
+						type: "POST",
+						url: form.attr("action"),
+						data: form.serialize(),
+						success: function (data) {
+							// Handle success, e.g., update UI to reflect the added product
+							console.log(data);
+		
+							// Redirect to the cart page
+							window.location.href = "{% url 'cart' %}";
+						},
+						error: function (error) {
+							// Handle error
+							console.log(error);
+						}
 					});
-				}
+				});
 			});
 		</script>
+		
 		
 
 
